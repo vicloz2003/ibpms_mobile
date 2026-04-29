@@ -41,7 +41,7 @@ class _ProcessDetailScreenState extends State<ProcessDetailScreen> {
     final token = await SecureStorageService.getAccessToken();
     final wsUrl = kIsWeb
       ? 'ws://localhost:3000/ws/websocket'
-      : 'ws://10.0.2.2:3000/ws/websocket';
+      : 'ws://34.237.109.152:3000/ws/websocket';
 
     _stompClient = StompClient(
       config: StompConfig(
