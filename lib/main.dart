@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/offline/connectivity_service.dart';
+import 'core/offline/sync_queue.dart';
 import 'core/storage/secure_storage.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/processes/screens/process_list_screen.dart';
@@ -14,6 +18,12 @@ void main() async {
     // Clearing storage and starting unauthenticated is safe.
     await SecureStorageService.clearAll();
     isLoggedIn = false;
+  }
+  // Boot the offline layer (RNF-6): start watching connectivity and replay any
+  // operations queued in a previous offline session.
+  ConnectivityService.instance;
+  if (isLoggedIn) {
+    unawaited(SyncQueue.instance.flush());
   }
   runApp(
     ProviderScope(

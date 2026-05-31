@@ -4,6 +4,8 @@ import '../../../core/models/process_models.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/process_service.dart';
 import '../../../core/utils/format_utils.dart';
+import '../../shared/widgets/offline_banner.dart';
+import '../../agent/screens/chatbot_screen.dart';
 import '../../auth/screens/login_screen.dart';
 import 'process_detail_screen.dart';
 
@@ -95,7 +97,11 @@ class _ProcessListScreenState extends State<ProcessListScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<List<ProcessStatus>>(
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(
+            child: FutureBuilder<List<ProcessStatus>>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -173,11 +179,20 @@ class _ProcessListScreenState extends State<ProcessListScreen> {
             },
           );
         },
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _load,
-        tooltip: 'Actualizar',
-        child: const Icon(Icons.refresh),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ChatbotScreen()),
+          );
+          _load(); // refresh in case a new trámite was started
+        },
+        tooltip: 'Iniciar trámite con el asistente',
+        icon: const Icon(Icons.smart_toy),
+        label: const Text('Nuevo trámite'),
       ),
     );
   }

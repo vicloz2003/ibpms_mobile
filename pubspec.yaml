@@ -50,6 +50,18 @@ dependencies:
   # UI
   google_fonts: ^6.2.1
 
+  # Open URLs in external browser
+  url_launcher: ^6.3.0
+
+  # Agente: grabación de voz + selección de documentos (RF-2)
+  record: ^5.1.2
+  file_picker: ^8.1.2
+  path_provider: ^2.1.4
+
+  # Offline 100% (RNF-6): detección de conectividad + caché/cola locales.
+  # path_provider (arriba) persiste la caché de lectura y la cola de sincronización.
+  connectivity_plus: ^6.0.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
