@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "969657343452",
+    "project_id": "ibpms-prod",
+    "storage_bucket": "ibpms-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:969657343452:android:f682df42493cac3aa14319",
+        "android_client_info": {
+          "package_name": "com.ibpms.ibpms_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrVyiPWpUnlqnj9zHUf2C4zgxK1stvKU0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Agent voice input (RF-2.2): microphone recording -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- FCM push notifications on Android 13+ (RF-28) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:label="ibpms_mobile"
         android:name="${applicationName}"

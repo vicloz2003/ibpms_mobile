@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../core/models/auth_models.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/fcm_service.dart';
 import '../../processes/screens/process_list_screen.dart';
 import 'register_screen.dart';
 
@@ -36,6 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
           password: _passwordController.text,
         ),
       );
+      // Register FCM token with backend after successful login (RF-28)
+      unawaited(FcmService.registerToken());
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const ProcessListScreen()),
