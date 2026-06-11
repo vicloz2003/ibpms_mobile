@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/offline/connectivity_service.dart';
@@ -16,6 +17,8 @@ void main() async {
   // Firebase init (RF-28) — graceful degradation if not configured
   try {
     await Firebase.initializeApp();
+    // Must be registered before runApp and use a top-level handler (RF-29/30).
+    FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
     await FcmService.init();
   } catch (_) {
     // Firebase not configured or google-services.json missing — skip silently
