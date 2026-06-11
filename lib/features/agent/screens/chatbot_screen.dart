@@ -89,10 +89,25 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       _snack('Permiso de micrófono denegado');
       return;
     }
+    // Cancel any lingering session before starting a new one.
+    try { await _recorder.cancel(); } catch (_) {}
     final dir = await getTemporaryDirectory();
     final filePath =
         '${dir.path}${Platform.pathSeparator}agent_${DateTime.now().millisecondsSinceEpoch}.m4a';
-    await _recorder.start(const RecordConfig(), path: filePath);
+    // Record straight to 16 kHz mono (Whisper's native format) using the
+    // VOICE_RECOGNITION audio source: it disables AGC/echo-cancellation that, with
+    // the DEFAULT source, routes a muted (-91 dB silent) stream on many devices.
+    await _recorder.start(
+      const RecordConfig(
+        encoder: AudioEncoder.aacLc,
+        sampleRate: 16000,
+        numChannels: 1,
+        androidConfig: AndroidRecordConfig(
+          audioSource: AndroidAudioSource.voiceRecognition,
+        ),
+      ),
+      path: filePath,
+    );
     setState(() => _recording = true);
   }
 
@@ -100,9 +115,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     setState(() => _transcribing = true);
     try {
       final text = await _agent.transcribe(path);
-      _textCtrl.text = text;
       if (text.trim().isNotEmpty) {
+        _textCtrl.text = text;
         await _send(); // auto-send the transcription
+      } else {
+        _addMessage(false, 'No pude entender el audio. Intenta hablar más claro o escribe tu solicitud.');
       }
     } catch (_) {
       _snack('No se pudo transcribir el audio');
