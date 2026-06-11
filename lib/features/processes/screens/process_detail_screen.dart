@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
@@ -45,6 +43,17 @@ class _ProcessDetailScreenState extends State<ProcessDetailScreen> {
     super.dispose();
   }
 
+  /// Refetch the full status after a WebSocket change-ping and refresh documents.
+  Future<void> _refreshStatus() async {
+    try {
+      final updated = await _processService.getStatus(_process.processInstanceId);
+      if (mounted) setState(() => _process = updated);
+    } catch (_) {
+      // non-critical — keep showing the last known state
+    }
+    await _loadDocuments();
+  }
+
   Future<void> _loadDocuments() async {
     setState(() => _loadingDocs = true);
     try {
@@ -72,15 +81,10 @@ class _ProcessDetailScreenState extends State<ProcessDetailScreen> {
           _stompClient?.subscribe(
             destination: '/topic/process/${widget.process.processInstanceId}',
             callback: (StompFrame message) {
-              if (message.body != null) {
-                final updated = ProcessStatus.fromJson(
-                  json.decode(message.body!) as Map<String, dynamic>,
-                );
-                if (mounted) {
-                  setState(() => _process = updated);
-                  _loadDocuments();
-                }
-              }
+              // The broadcast is a lightweight change-ping (it lacks nodeProgress /
+              // progressPercent). Refetch the authoritative full status so the timeline
+              // and percent advance correctly instead of resetting to defaults.
+              _refreshStatus();
             },
           );
         },

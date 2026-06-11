@@ -50,6 +50,13 @@ class ProcessService {
     return null;
   }
 
+  /// Full, authoritative status for a single trámite (rich nodeProgress + percent).
+  /// Used to refresh the detail screen when a lightweight WebSocket change-ping arrives.
+  Future<ProcessStatus> getStatus(String processInstanceId) async {
+    final response = await _dio.get('/processes/$processInstanceId/status');
+    return ProcessStatus.fromJson(response.data as Map<String, dynamic>);
+  }
+
   Future<List<DocumentModel>> getDocuments(String processInstanceId) async {
     final response = await _dio.get('/processes/$processInstanceId/documents');
     return (response.data as List)
