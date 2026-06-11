@@ -49,13 +49,19 @@ class AgentService {
 
     // 2) PUT bytes straight to S3 — use a clean Dio (NO auth interceptor,
     //    the Bearer header would break the S3 signature).
+    //    The presigned URL signs `content-type;host`, so the PUT MUST send exactly
+    //    the same Content-Type that was signed. Set it via Options.contentType
+    //    (Dio's canonical field) — putting it only in the headers map lets Dio's
+    //    default application/json leak through and S3 rejects with
+    //    SignatureDoesNotMatch. contentLengthHeader avoids chunked transfer encoding
+    //    (which S3 presigned PUT does not accept).
     final bytes = await file.readAsBytes();
     await Dio().put(
       presignedUrl,
       data: Stream.fromIterable([bytes]),
       options: Options(
+        contentType: mimeType,
         headers: {
-          'Content-Type': mimeType,
           Headers.contentLengthHeader: bytes.length,
         },
       ),
